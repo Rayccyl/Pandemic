@@ -1,11 +1,11 @@
+import javafx.scene.chart.XYChart;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
 public class Model {
-    public static final double PROB_DEATH=.1;
-    public static final double SPREAD_DAYS=14;
-    protected static final int RADIUS=5;
+    public double probDeath =.1;
+    public double spreadDays =14;
     protected static final int DAY_STEPS=50;
     protected static final Color COLOR0 = Color.BLACK;
     protected static final Color COLOR1 = Color.GREEN;
@@ -18,10 +18,17 @@ public class Model {
     protected int num2;
     protected int num3;
     protected int num4;
-    protected int infectDistance;
+    protected double infectDistance;
     protected int incubate;
     protected int speed;
     protected double mapWidth;
     protected double mapHeight;
+    protected int day;
+    protected double vaccine;
     protected ArrayList<Person> pool = new ArrayList<Person>();
+    XYChart.Series seriesHealthy=new XYChart.Series<>();
+    XYChart.Series seriesIncubate=new XYChart.Series<>();
+    XYChart.Series seriesInfecting=new XYChart.Series<>();
+    XYChart.Series seriesCure=new XYChart.Series<>();
+    XYChart.Series seriesDie=new XYChart.Series<>();
 }

@@ -1,4 +1,5 @@
 import javafx.animation.FadeTransition;
+import javafx.scene.chart.XYChart;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
@@ -49,9 +50,11 @@ public class Person extends Circle {
         if(status==4)return;
         if(model.num1+model.num2==0) {
             view.pause.setDisable(true);
-            view.set2.setDisable(true);
-            view.set3.setDisable(true);
-            view.set4.setDisable(true);
+            view.infectDistance.setDisable(true);
+            view.incubateDays.setDisable(true);
+            view.speed.setDisable(true);
+            view.probDeath.setDisable(true);
+            view.spreadDays.setDisable(true);
             return;
         }
         if(view.start.getText()=="开始模拟"){
@@ -81,8 +84,6 @@ public class Person extends Circle {
 
 
         if(step% Model.DAY_STEPS==this.hashCode()%Model.DAY_STEPS){
-
-            //new day
             double dayX,dayY;
             dayX = this.getCenterX() +0.2*model.mapWidth - .4*model.mapWidth*Math.random();
             dayY = this.getCenterY() +0.2*model.mapHeight - .4*model.mapHeight*Math.random();
@@ -97,8 +98,8 @@ public class Person extends Circle {
                 }
             } else if (this.status==2) {
                 this.day_infected++;
-                if(this.day_infected>=model.incubate+model.SPREAD_DAYS){
-                    if(Math.random()< Model.PROB_DEATH){
+                if(this.day_infected>=model.incubate+model.spreadDays){
+                    if(Math.random()< model.probDeath){
                         this.setStatus(4);
                         model.num2--;model.num4++;
                     }else{
@@ -109,7 +110,16 @@ public class Person extends Circle {
                 }
             }
             update();
-            view.day.setText("day"+step/ Model.DAY_STEPS);
+            if(step/Model.DAY_STEPS== model.day+1){
+                model.day++;
+                view.day.setText("day"+model.day);
+
+                model.seriesHealthy.getData().add(new XYChart.Data(model.day,model.num0));
+                model.seriesIncubate.getData().add(new XYChart.Data(model.day,model.num1));
+                model.seriesInfecting.getData().add(new XYChart.Data(model.day,model.num2));
+                model.seriesCure.getData().add(new XYChart.Data(model.day,model.num3));
+                model.seriesDie.getData().add(new XYChart.Data(model.day,model.num4));
+            }
             view.t0.setText(model.num0+"");
             view.t1.setText(model.num1+"");
             view.t2.setText(model.num2+"");
