@@ -1,3 +1,6 @@
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
@@ -29,15 +32,25 @@ public class View extends BorderPane {
         set1.setValue(100);
         set2.getItems().addAll(1,5,10);
         set2.setValue(1);
+        set2.valueProperty().addListener((observable, oldValue, newValue) -> {
+            model.infectDistance = newValue;
+        });
         set3.getItems().addAll(3,5,7);
         set3.setValue(7);
+        set3.valueProperty().addListener((observable, oldValue, newValue) -> {
+            model.incubate = newValue;
+        });
         set4.getItems().addAll(1,2,3);
         set4.setValue(1);
+        set4.valueProperty().addListener((observable, oldValue, newValue) -> {
+            model.speed = newValue;
+        });
+
         model.num=set1.getValue();
         model.infectDistance=set2.getValue();
         model.incubate=set3.getValue();
         model.speed = set4.getValue();
-
+        pause.setDisable(true);
         Text tt0=new Text("正常");
         Text tt1=new Text("潜伏");
         Text tt2=new Text("传播");
@@ -57,5 +70,6 @@ public class View extends BorderPane {
         this.setTop(topBar);
         this.setCenter(map);
         this.setRight(rBar);
+
     }
 }

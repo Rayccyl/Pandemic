@@ -2,9 +2,9 @@ import javafx.animation.FadeTransition;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
+
 public class Person extends Circle {
     private static final int RADIUS=5;
-
     private int status=0;
     //正常0 潜伏1 传播2 痊愈3 死亡4
     private double dx,dy;
@@ -46,7 +46,12 @@ public class Person extends Circle {
         }
     }
     void randomWalk(){
-        if(status==3){
+        if(status==4)return;
+        if(model.num1+model.num2==0) {
+            view.pause.setDisable(true);
+            view.set2.setDisable(true);
+            view.set3.setDisable(true);
+            view.set4.setDisable(true);
             return;
         }
         if(view.start.getText()=="开始模拟"){
@@ -57,7 +62,6 @@ public class Person extends Circle {
             //点击暂停
             return;
         }
-        //好好好 走走走
         //status:2特殊处理
         if(this.status==2){
             model.pool.forEach(person -> {
@@ -74,21 +78,15 @@ public class Person extends Circle {
                 }
             });
         }
-        if(step% Model.DAY_STEPS==0){
+
+
+        if(step% Model.DAY_STEPS==this.hashCode()%Model.DAY_STEPS){
+
             //new day
             double dayX,dayY;
             dayX = this.getCenterX() +0.2*model.mapWidth - .4*model.mapWidth*Math.random();
-            dayY = this.getCenterY() +0.2*model.mapWidth - .4*model.mapWidth*Math.random();
-            if(dayX<RADIUS*2){
-                dayX=RADIUS*2;
-            }else if (dayX>model.mapWidth-RADIUS*2){
-                dayX=model.mapWidth-RADIUS*2;
-            }
-            if(dayY<RADIUS*2){
-                dayY=RADIUS*2;
-            }else if (dayY>model.mapHeight-RADIUS*2){
-                dayY=model.mapHeight-RADIUS*2;
-            }
+            dayY = this.getCenterY() +0.2*model.mapHeight - .4*model.mapHeight*Math.random();
+
             dx=(dayX-this.getCenterX())/ Model.DAY_STEPS;
             dy=(dayY-this.getCenterY())/ Model.DAY_STEPS;
             if(status==1){
@@ -118,20 +116,30 @@ public class Person extends Circle {
             view.t3.setText(model.num3+"");
             view.t4.setText(model.num4+"");
         }
+        if(this.getCenterX()+dx<2*RADIUS||this.getCenterX()+dx+2*RADIUS>model.mapWidth){
+            dx*=-1;
+        }
+        if(this.getCenterY()+dy<2*RADIUS||this.getCenterY()+dy+2*RADIUS>model.mapHeight){
+            dy*=-1;
+        }
+
+
+
         //走
         FadeTransition fadeTransition = new FadeTransition();
         fadeTransition.setFromValue(1);
-        fadeTransition.setFromValue(1);
+        fadeTransition.setToValue(1);
         fadeTransition.setDuration(Duration.millis(1000/ Model.DAY_STEPS/model.speed));
+        fadeTransition.setDelay(Duration.millis(Math.random()/15));
         fadeTransition.setNode(this);
-        fadeTransition.play();
+
         fadeTransition.setOnFinished(event -> {
-            System.out.println(String.format("node %s: day %d step %d sum steps %d",this.getId(),step/ Model.DAY_STEPS,step% Model.DAY_STEPS,step));
             this.setCenterX(this.getCenterX()+dx);
             this.setCenterY(this.getCenterY()+dy);
             this.step++;
             randomWalk();
         });
+        fadeTransition.play();
     }
 
     private double dist(Person person) {
